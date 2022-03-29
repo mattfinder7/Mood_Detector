@@ -3,6 +3,7 @@
 #https://github.com/lilipads/emotion-detection
 
 
+import numpy as np
 import cv2
 from cv2 import FILLED
 
@@ -23,6 +24,10 @@ if webcam.isOpened():
     # change from float to int  
     ww = int(webcam_width)
     wh = int(webcam_height)
+
+x, y, w, h = 0, 0, ww, wh
+sub_img = webcam[0:wh, 0:ww]
+op_rect = np.ones(sub_img.shape, dtype=np.uint8) * 255
 
 #iterate over the frames forever
 while True:
@@ -45,6 +50,7 @@ while True:
         #cv2.rectangle(frame, (0,0), (ww, wh), (0, 255, 0), FILLED)
         cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 255, 0), 2)
         # print(face_coordinates) is going to be [[267  93 201 201]]
+        res = cv2.addWeighted(sub_img, 0.5, op_rect, 0.5, 1.0)
     
     print(face_coordinates_smile)
     cv2.imshow('Face Detector', frame)
