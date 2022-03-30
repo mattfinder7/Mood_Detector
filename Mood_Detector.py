@@ -1,6 +1,7 @@
 #https://github.com/opencv/opencv/tree/master/data/haarcascades
 #https://docs.opencv.org/4.x/
 #https://github.com/lilipads/emotion-detection
+#https://viso.ai/computer-vision/deepface/
 
 
 import cv2
@@ -44,6 +45,17 @@ while True:
         print(result['dominant_emotion'])
         if result['dominant_emotion'] == 'happy':
             cv2.rectangle(frame, (0,0), (ww, wh), (0, 255, 0), FILLED)
+        elif result['dominant_emotion'] == 'angry':
+            cv2.rectangle(frame, (0,0), (ww, wh), (0, 0, 255), FILLED)
+        elif result['dominant_emotion'] == 'sad':
+            cv2.rectangle(frame, (0,0), (ww, wh), (255, 0, 0), FILLED)
+        elif result['dominant_emotion'] == 'disgust':
+            print('disgust')
+        elif result['dominant_emotion'] == 'fear':
+            print('fear')
+        elif result['dominant_emotion'] == 'surprise':
+            cv2.rectangle(frame, (0,0), (ww, wh), (255, 225, 0), FILLED)
+
     cv2.imshow('Face Detector', frame)
     key = cv2.waitKey(1)
 
