@@ -2,11 +2,18 @@
 #https://docs.opencv.org/4.x/
 #https://github.com/lilipads/emotion-detection
 #https://viso.ai/computer-vision/deepface/
+#opacity --> https://stackoverflow.com/questions/56472024/how-to-change-the-opacity-of-boxes-cv2-rectangle
 
 
 import cv2
 from cv2 import FILLED
 from deepface import DeepFace
+import time
+
+#wait at color for 2500 milliseconds
+def wait():    
+    cv2.imshow('Face Detector', frame)
+    key = cv2.waitKey(2500)
 
 #load some pretrained data on face frontals from opencv (haar cascade algorithm)
 trained_face_data = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
@@ -25,6 +32,8 @@ if webcam.isOpened():
     ww = int(webcam_width)
     wh = int(webcam_height)
 
+timer = time.time()
+addtime = 10
 #iterate over the frames forever
 while True:
     #read current frame
@@ -39,22 +48,36 @@ while True:
     #detect faces
     #doc: https://docs.opencv.org/4.x/d1/de5/classcv_1_1CascadeClassifier.html
     face_coordinates = trained_face_data.detectMultiScale(grayscaled_img)
-
-    #opacity --> https://stackoverflow.com/questions/56472024/how-to-change-the-opacity-of-boxes-cv2-rectangle
+ 
     for (x,y,w,h) in face_coordinates:
+        cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 255, 0), 2)#color is BGR not RGB!!!
         print(result['dominant_emotion'])
-        if result['dominant_emotion'] == 'happy':
-            cv2.rectangle(frame, (0,0), (ww, wh), (0, 255, 0), FILLED)
-        elif result['dominant_emotion'] == 'angry':
-            cv2.rectangle(frame, (0,0), (ww, wh), (0, 0, 255), FILLED)
-        elif result['dominant_emotion'] == 'sad':
-            cv2.rectangle(frame, (0,0), (ww, wh), (255, 0, 0), FILLED)
-        elif result['dominant_emotion'] == 'disgust':
-            print('disgust')
-        elif result['dominant_emotion'] == 'fear':
-            print('fear')
-        elif result['dominant_emotion'] == 'surprise':
-            cv2.rectangle(frame, (0,0), (ww, wh), (255, 225, 0), FILLED)
+        if timer <= time.time():
+            if result['dominant_emotion'] == 'happy':
+                cv2.rectangle(frame, (0,0), (ww, wh), (0, 255, 0), FILLED)
+                #wait at color for 2500 milliseconds and don't select another color for 5 seconds
+                wait() 
+                timer = time.time() + addtime
+            elif result['dominant_emotion'] == 'angry':
+                cv2.rectangle(frame, (0,0), (ww, wh), (0, 0, 255), FILLED)
+                wait()
+                timer = time.time() + addtime
+            elif result['dominant_emotion'] == 'sad':
+                cv2.rectangle(frame, (0,0), (ww, wh), (255, 0, 0), FILLED)
+                wait()
+                timer = time.time() + addtime
+            elif result['dominant_emotion'] == 'disgust':
+                cv2.rectangle(frame, (0,0), (ww, wh), (255, 140, 0), FILLED)
+                wait()
+                timer = time.time() + addtime
+            elif result['dominant_emotion'] == 'fear':
+                cv2.rectangle(frame, (0,0), (ww, wh), (52, 25, 48), FILLED)
+                wait()
+                timer = time.time() + addtime
+            elif result['dominant_emotion'] == 'surprise':
+                cv2.rectangle(frame, (0,0), (ww, wh), (0, 225, 225), FILLED)
+                wait()
+                timer = time.time() + addtime
 
     cv2.imshow('Face Detector', frame)
     key = cv2.waitKey(1)
@@ -74,3 +97,4 @@ webcam.release()
 #cv2.waitKey() #without img will only show for 1 sec and then close
 
 print("Done")
+
