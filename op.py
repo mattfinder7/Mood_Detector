@@ -1,19 +1,28 @@
 import cv2
-from cv2 import imshow
-from cv2 import waitKey
 import numpy as np
 
-img = cv2.imread("matt2.png")
+# Load image
+img = cv2.VideoCapture(0)
+successfull_frame_read, frame = img.read()
 
-# First we crop the sub-rect from the image
-x, y, w, h = 100, 100, 200, 100
-sub_img = img[y:y+h, x:x+w]
-white_rect = np.ones(sub_img.shape, dtype=np.uint8) * 255
+# Initialize blank mask image of same dimensions for drawing the shapes
+shapes = np.zeros_like(img, np.uint8)
 
-res = cv2.addWeighted(sub_img, 0.5, white_rect, 0.5, 1.0)
+# Draw shapes
+cv2.rectangle(shapes, (5, 5), (100, 75), (255, 255, 255), cv2.FILLED)
+cv2.circle(shapes, (300, 300), 75, (255, 255, 255), cv2.FILLED)
 
-# Putting the image back to its position
-img[y:y+h, x:x+w] = res
+# Generate output by blending image with shapes image, using the shapes
+# images also as mask to limit the blending to those parts
+out = img.copy()
+alpha = 0.5
+mask = shapes.astype(bool)
+out[mask] = cv2.addWeighted(img, alpha, shapes, 1 - alpha, 0)[mask]
 
-cv2.imshow('op',img)
-waitKey()
+# Visualization
+cv2.imshow('Image', img)
+#cv2.imshow('Shapes', shapes)
+#cv2.imshow('Output', out)
+cv2.waitKey(1)
+
+cv2.destroyAllWindows()

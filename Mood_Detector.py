@@ -3,13 +3,12 @@
 #https://github.com/lilipads/emotion-detection
 
 
-import numpy as np
 import cv2
 from cv2 import FILLED
+from deepface import DeepFace
 
 #load some pretrained data on face frontals from opencv (haar cascade algorithm)
 trained_face_data = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-trained_smile_data = cv2.CascadeClassifier('haarcascade_smile.xml')
 
 #capture video from webcam
 webcam = cv2.VideoCapture(0)
@@ -25,15 +24,12 @@ if webcam.isOpened():
     ww = int(webcam_width)
     wh = int(webcam_height)
 
-x, y, w, h = 0, 0, ww, wh
-sub_img = webcam[0:wh, 0:ww]
-op_rect = np.ones(sub_img.shape, dtype=np.uint8) * 255
-
 #iterate over the frames forever
 while True:
     #read current frame
     #successfull_frame_read will always be true
     successfull_frame_read, frame = webcam.read()
+    result = DeepFace.analyze(frame, actions = ['emotion'], enforce_detection=False)
     
     #convert to greyscale 
     #doc: https://docs.opencv.org/4.x/d8/d01/group__imgproc__color__conversions.html#ga397ae87e1288a81d2363b61574eb8cab
@@ -42,17 +38,12 @@ while True:
     #detect faces
     #doc: https://docs.opencv.org/4.x/d1/de5/classcv_1_1CascadeClassifier.html
     face_coordinates = trained_face_data.detectMultiScale(grayscaled_img)
-    face_coordinates_smile = trained_smile_data.detectMultiScale(grayscaled_img)
-
 
     #opacity --> https://stackoverflow.com/questions/56472024/how-to-change-the-opacity-of-boxes-cv2-rectangle
-    for (x,y,w,h) in face_coordinates_smile:
-        #cv2.rectangle(frame, (0,0), (ww, wh), (0, 255, 0), FILLED)
-        cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 255, 0), 2)
-        # print(face_coordinates) is going to be [[267  93 201 201]]
-        res = cv2.addWeighted(sub_img, 0.5, op_rect, 0.5, 1.0)
-    
-    print(face_coordinates_smile)
+    for (x,y,w,h) in face_coordinates:
+        print(result['dominant_emotion'])
+        if result['dominant_emotion'] == 'happy':
+            cv2.rectangle(frame, (0,0), (ww, wh), (0, 255, 0), FILLED)
     cv2.imshow('Face Detector', frame)
     key = cv2.waitKey(1)
 
