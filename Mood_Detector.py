@@ -5,15 +5,26 @@
 #opacity --> https://stackoverflow.com/questions/56472024/how-to-change-the-opacity-of-boxes-cv2-rectangle
 
 
+from cgitb import text
 import cv2
 from cv2 import FILLED
 from deepface import DeepFace
 import time
+import pyttsx3
 
 #wait at color for 2500 milliseconds
-def wait():    
+def wait(timer, text):    
     cv2.imshow('Face Detector', frame)
-    key = cv2.waitKey(2500)
+    key = cv2.waitKey(2000)
+    text_to_speech(text)
+
+#output text as audio   
+def text_to_speech(text):
+    engine = pyttsx3.init()
+    engine.say(text)
+    engine.runAndWait()
+
+text = "Hello world"
 
 #load some pretrained data on face frontals from opencv (haar cascade algorithm)
 trained_face_data = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
@@ -59,8 +70,10 @@ while True:
                 cv2.rectangle(frame, (0,0), (ww, wh), (0, 255, 0), FILLED)
                 
                 #wait at color for 2500 milliseconds and don't select another color for 'addtime' seconds
-                wait() 
+                text = "Happy"
+                wait(text) 
                 timer = time.time() + addtime
+                
             elif result['dominant_emotion'] == 'angry':
                 cv2.rectangle(frame, (0,0), (ww, wh), (0, 0, 255), FILLED)
                 wait()
