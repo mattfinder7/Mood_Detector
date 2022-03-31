@@ -54,8 +54,11 @@ while True:
         print(result['dominant_emotion'])
         if timer <= time.time():
             if result['dominant_emotion'] == 'happy':
+                #make rectangle transparent
+                #frame[0:wh, 0:ww, :] = cv2.addWeighted(frame[0:wh, 0:ww, :], 0.5, frame[0:wh, 0:ww, :], 0.5, 0)
                 cv2.rectangle(frame, (0,0), (ww, wh), (0, 255, 0), FILLED)
-                #wait at color for 2500 milliseconds and don't select another color for 5 seconds
+                
+                #wait at color for 2500 milliseconds and don't select another color for 'addtime' seconds
                 wait() 
                 timer = time.time() + addtime
             elif result['dominant_emotion'] == 'angry':
@@ -89,12 +92,6 @@ while True:
 
 #ends the webcam
 webcam.release()
-
-
-
-#will show the img
-#cv2.imshow('Face Dector', frame)
-#cv2.waitKey() #without img will only show for 1 sec and then close
 
 print("Done")
 
